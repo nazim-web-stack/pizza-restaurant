@@ -1,6 +1,16 @@
 import React from 'react'
 
 export default function About() {
+  const scrollToMenu = () => {
+    const menuElement = document.getElementById('menu');
+    if (menuElement) {
+      menuElement.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // If menu element not found, navigate to menu page
+      window.location.href = '/menu';
+    }
+  };
+
   return (
     <>
      <section style={{ padding: '100px 0', background: '#fff' }}>
@@ -13,15 +23,30 @@ export default function About() {
           <div className="col-lg-6">
             <span style={{ color: '#f5a623', fontSize: '0.8rem', letterSpacing: '4px', textTransform: 'uppercase', fontWeight: 700 }}>Welcome</span>
             <h2 style={{ fontFamily: 'Georgia', fontSize: '2.5rem', color: '#1a1a2e', margin: '12px 0 25px' }}>
-              We cooked your desired Pizza Recipe
+              Authentic Pakistani & Italian Cuisine
             </h2>
             <p style={{ fontSize: '1rem', lineHeight: 1.9, color: '#777', marginBottom: '18px' }}>
-              On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times.
+              Pak Fried Food is a family restaurant located in Stoke-on-Trent, UK. We serve authentic Pakistani and Italian cuisine made with the freshest ingredients.
             </p>
             <p style={{ fontSize: '1rem', lineHeight: 1.9, color: '#777', marginBottom: '25px' }}>
-              Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.
+              From crispy fried chicken to wood-fired pizzas, our menu offers something for everyone. Visit us today and experience the taste of tradition.
             </p>
-            <a href="#" style={{ background: '#f5a623', color: '#fff', padding: '13px 35px', borderRadius: '30px', fontWeight: 700, textDecoration: 'none', display: 'inline-block' }}>Read More</a>
+            <button 
+              onClick={scrollToMenu}
+              style={{ 
+                background: '#f5a623', 
+                color: '#fff', 
+                padding: '13px 35px', 
+                borderRadius: '30px', 
+                fontWeight: 700, 
+                textDecoration: 'none', 
+                display: 'inline-block',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              View Our Menu
+            </button>
           </div>
         </div>
       </div>

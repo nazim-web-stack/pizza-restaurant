@@ -1,6 +1,54 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
-export default function Pricing({items}) {
+export default function Pricing() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchMenuItems();
+  }, []);
+
+  const fetchMenuItems = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/menu');
+      if (!response.ok) {
+        throw new Error('Failed to fetch menu items');
+      }
+      const data = await response.json();
+      setItems(data || []);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching menu items:', err);
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section style={{ padding: '100px 0', background: '#fff' }}>
+        <div className="container">
+          <div className="text-center">
+            <p style={{ color: '#666' }}>Loading menu items...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section style={{ padding: '100px 0', background: '#fff' }}>
+        <div className="container">
+          <div className="text-center">
+            <p style={{ color: '#e74c3c' }}>Error loading menu: {error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <>
     <section style={{ padding: '100px 0', background: '#fff' }}>
@@ -20,9 +68,9 @@ export default function Pricing({items}) {
                 onMouseLeave={e => { e.currentTarget.style.borderColor = '#f0f0f0'; e.currentTarget.style.transform = 'translateY(0)'; }}
               >
                 <h4 style={{ fontSize: '1.1rem', color: '#1a1a2e', marginBottom: '10px', fontWeight: 700 }}>{item.name}</h4>
-                <p style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '15px', lineHeight: 1.6 }}>{item.desc}</p>
+                <p style={{ fontSize: '0.85rem', color: '#aaa', marginBottom: '15px', lineHeight: 1.6 }}>{item.desc || item.description}</p>
                 <div style={{ fontSize: '2rem', fontWeight: 800, color: '#f5a623' }}>
-                  {item.price}<span style={{ fontSize: '1rem', color: '#aaa', fontWeight: 400 }}>/plate</span>
+                  Rs {item.price}<span style={{ fontSize: '1rem', color: '#aaa', fontWeight: 400 }}>/plate</span>
                 </div>
               </div>
             </div>

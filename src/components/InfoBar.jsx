@@ -7,9 +7,9 @@ export default function InfoBar() {
       <div className="container">
         <div className="row">
           {[
-            { icon: 'fa-phone-alt', title: '000 (123) 456 7890', desc: 'A small river named Duden flows' },
-            { icon: 'fa-map-marker-alt', title: '198 West 21th Street', desc: 'Suite 721 New York NY 10016' },
-            { icon: 'fa-clock', title: 'Open Monday–Friday', desc: '8:00am – 9:00pm' },
+            { icon: 'fa-phone-alt', title: '+92 319 8634894', desc: 'Call us for reservations' },
+            { icon: 'fa-map-marker-alt', title: '94/9-L Sahiwal, Stoke-on-Trent, UK', desc: 'Visit our restaurant' },
+            { icon: 'fa-clock', title: 'Open Daily', desc: '11:00am - 11:00pm' },
           ].map((item, i) => (
             <div key={i} className="col-md-4 text-center" style={{ padding: '10px' }}>
               <i className={`fas ${item.icon}`} style={{ fontSize: '2rem', color: '#f5a623', marginBottom: '12px', display: 'block' }}></i>

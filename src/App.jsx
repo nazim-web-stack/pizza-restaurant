@@ -1,22 +1,32 @@
 import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from './components/Navbar';
 import HeroSlider from './components/HeroSlider';
 import InfoBar from './components/InfoBar';
 import About from './components/About';
 import Services from './components/Services';
 import Menu from './components/Menu';
+import OrderPage from './components/OrderPage';
 import Pricing from './components/Pricing';
 import Counter from './components/Counter';
 import Blog from './components/Blog';
+import Contact from './components/Contact';
 import Footer from './components/Footer';
+import Login from './components/Login';
+import CustomerDashboard from './components/CustomerDashboard';
+import { useState } from 'react';
+import AdminPanel from "./pages/AdminPanel";
+
 
 const links = [
-  { name: 'Home', path: 'home' },
-  { name: 'Menu', path: 'menu' },
-  { name: 'Services', path: 'services' },
-  { name: 'Blog', path: 'blog' },
-  { name: 'About', path: 'about' },
-  { name: 'Contact', path: 'contact' },
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Menu", path: "/menu" },
+  { name: "Order", path: "/order" },
+  { name: "Pricing", path: "/pricing" },
+  { name: "Services", path: "/services" },
+  { name: "Blog", path: "/blog" },
+  { name: "Contact", path: "/contact" },
 ];
 
 const prices = [
@@ -32,16 +42,40 @@ const prices = [
 
 
 const blogs = [
-  { img: '/images/gallery-1.jpg', date: 'Sept 10, 2018', title: 'The Delicious Pizza', desc: 'A small river named Duden flows by their place and supplies it with the necessary regelialia.' },
-  { img: '/images/gallery-2.jpg', date: 'Sept 10, 2018', title: 'The Delicious Pizza', desc: 'A small river named Duden flows by their place and supplies it with the necessary regelialia.' },
-  { img: '/images/gallery-3.jpg', date: 'Sept 10, 2018', title: 'The Delicious Pizza', desc: 'A small river named Duden flows by their place and supplies it with the necessary regelialia.' },
-];
+  {
+    id: 1,
+    img: "/images/pizza-1.jpg",
+    title: "Introducing Our New Spicy Chicken Pizza",
+    date: "March 25, 2026",
+    desc: "Experience the perfect blend of spicy chicken, fresh veggies, and our signature cheese. A must-try for spice lovers!",
+    fullContent: "Full article: Our new spicy chicken pizza is made with marinated chicken, jalapenos, bell peppers, and triple cheese blend. Available in medium and large sizes. Order now and get 20% off on first order!",
+    link: "/blog/1"
+  },
+  {
+    id: 2,
+    img: "/images/weekendspecial.jpg",
+    title: "Weekend Special: Buy 1 Get 1 Free",
+    date: "March 20, 2026",
+    desc: "This weekend only! Buy any large pizza and get another free. Valid for dine-in and takeaway.",
+    fullContent: "Full article: Offer valid from Friday to Sunday. Choose any two large pizzas, pay for the higher-priced one. Don't miss out!",
+    link: "/blog/2"
+  },
+  {
+    id: 3,
+    img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600",
+    title: "Live Cricket Screening at Our Restaurant",
+    date: "March 15, 2026",
+    desc: "Watch live cricket matches with friends and family. Enjoy special combo offers during matches.",
+    fullContent: "Full article: Every match day, we have special deals. Large pizza + 4 drinks + fries = just $25. Come and enjoy!",
+    link: "/blog/3"
+  }
+]
 
 const counters = [
-  { target: 120, label: 'Pizza Branches' },
-  { target: 35, label: 'Number of Awards' },
-  { target: 15000, label: 'Happy Customers' },
-  { target: 250, label: 'Staff' },
+  { target: 5, label: 'Pizza Branches' },
+  { target: 10, label: 'Number of Awards' },
+  { target: 2500, label: 'Happy Customers' },
+  { target: 25, label: 'Staff' },
 ];
 
 const slides = [
@@ -51,59 +85,111 @@ const slides = [
 ];
 
 
-const menuData = {
-  pizza: [
-    { img: '/images/pizza-1.jpg', name: 'Italian Pizza', desc: 'Far far away, behind the word mountains', price: '$2.90' },
-    { img: '/images/pizza-2.jpg', name: 'Greek Pizza', desc: 'Far far away, behind the word mountains', price: '$2.90' },
-    { img: '/images/pizza-3.jpg', name: 'Caucasian Pizza', desc: 'Far far away, behind the word mountains', price: '$2.90' },
-    { img: '/images/pizza-4.jpg', name: 'American Pizza', desc: 'Far far away, behind the word mountains', price: '$2.90' },
-    { img: '/images/pizza-5.jpg', name: 'Tomatoe Pie', desc: 'Far far away, behind the word mountains', price: '$2.90' },
-    { img: '/images/pizza-6.jpg', name: 'Margherita', desc: 'Far far away, behind the word mountains', price: '$2.90' },
-  ],
-  drinks: [
-    { img: '/images/drink-1.jpg', name: 'Lemonade Juice', desc: 'Fresh lemonade with ice', price: '$2.90' },
-    { img: '/images/drink-2.jpg', name: 'Pineapple Juice', desc: 'Fresh pineapple juice', price: '$2.90' },
-    { img: '/images/drink-3.jpg', name: 'Soda Drinks', desc: 'Assorted sodas', price: '$2.90' },
-    { img: '/images/drink-4.jpg', name: 'Orange Juice', desc: 'Fresh orange juice', price: '$2.90' },
-    { img: '/images/drink-5.jpg', name: 'Mango Shake', desc: 'Fresh mango milkshake', price: '$2.90' },
-    { img: '/images/drink-6.jpg', name: 'Strawberry Juice', desc: 'Fresh strawberry juice', price: '$2.90' },
-  ],
-  burgers: [
-    { img: '/images/burger-1.jpg', name: 'Classic Burger', desc: 'Beef patty with fresh veggies', price: '$3.90' },
-    { img: '/images/burger-2.jpg', name: 'Cheese Burger', desc: 'Double cheese with beef patty', price: '$4.50' },
-    { img: '/images/burger-3.jpg', name: 'BBQ Burger', desc: 'Smoky BBQ sauce burger', price: '$4.90' },
-  ],
-  pasta: [
-    { img: '/images/pasta-1.jpg', name: 'Pasta Carbonara', desc: 'Creamy sauce with bacon', price: '$3.50' },
-    { img: '/images/pasta-2.jpg', name: 'Pasta Bolognese', desc: 'Rich meat sauce pasta', price: '$3.90' },
-    { img: '/images/pasta-3.jpg', name: 'Pasta Alfredo', desc: 'Creamy white sauce pasta', price: '$3.70' },
-  ],
-};
-
 const services = [
-  { icon: '🥗', title: 'Healthy Foods', desc: 'Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life.' },
-  { icon: '🏍️', title: 'Fastest Delivery', desc: 'Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life.' },
-  { icon: '👨‍🍳', title: 'Original Recipes', desc: 'Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life.' },
+  { icon: '🥗', title: 'Healthy Foods', desc: 'We use only the freshest ingredients sourced daily. No artificial flavors, no compromises — just pure, delicious food for you and your family.' },
+  { icon: '🏍️', title: 'Fastest Delivery', desc: 'Order online and get your food delivered hot and fresh to your doorstep within 30 minutes. We deliver across Stoke-on-Trent, 7 days a week.' },
+  { icon: '👨‍🍳', title: 'Original Recipes', desc: 'Our chefs bring authentic Pakistani and Italian recipes passed down through generations. Every bite tells a story of tradition and passion.' },
 ];
 
+
+
+
+
+function ProtectedAdmin() {
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('userRole');
+  if (!token || role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
+  return <AdminPanel />;
+}
+
+function ProtectedUserDashboard() {
+  const token = localStorage.getItem('token');
+  const role = localStorage.getItem('userRole');
+  if (!token || role !== 'user') {
+    return <Navigate to="/" replace />;
+  }
+  return <CustomerDashboard />;
+}
+
 function App() {
+  const [showLogin, setShowLogin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('token'));
+
+  const [userRole, setUserRole] = useState(() => localStorage.getItem('userRole') || '');
+
+  const handleLoginClick = () => {
+    setShowLogin(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('customerId');
+    setIsLoggedIn(false);
+    setUserRole('');
+    window.location.href = '/';
+  };
+
+
   return (
-      <div>
-       
-            <div>
-      <Navbar links={links}/>
-      <HeroSlider HeroSlider={slides}/>
-      <InfoBar />
-      <div id="about"><About /></div>
-      <div id="services"><Services services={services}/></div>
-      <div id="menu"><Menu menuData={menuData} /></div>
-      <div id="pricing"><Pricing items={prices} /></div>
-      <Counter count={counters} />
-      <div id="blog"><Blog props={blogs}/></div>
-      <div id="contact"><Footer /></div>
-    </div>
-  
-      </div>
+    <BrowserRouter>
+      {/* Navbar */}
+      <Navbar
+         links={links}
+        isLoggedIn={isLoggedIn}
+        onLoginClick={handleLoginClick}
+        onLogout={handleLogout}
+        userRole={userRole}
+      />
+
+      {/* Routes */}
+      <Routes>
+        {/* Home Page */}
+        <Route
+          path="/"
+          element={
+            <>
+              <HeroSlider slides={slides} />
+              <InfoBar />
+              <About />
+              <Services services={services} />
+              <Menu />
+              <Pricing />
+              <Counter count={counters} />
+              <Blog blogs={blogs} />
+              <Footer />
+            </>
+          }
+        />
+
+        {/* Other Pages */}
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Services services={services} />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/order" element={<OrderPage />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/blog" element={<Blog blogs={blogs} />} />
+        <Route path="/contact" element={<Contact />} />
+
+        <Route path="/admin" element={<ProtectedAdmin />} />
+        <Route path="/dashboard" element={<ProtectedUserDashboard />} />
+      </Routes>
+
+      {/* Login Modal */}
+       {showLogin && (
+        <Login
+          onClose={() => setShowLogin(false)}
+          onLoginSuccess={(role) => {
+            setIsLoggedIn(true);
+            setUserRole(role);
+            setShowLogin(false);
+          }}
+        />
+      )}
+    </BrowserRouter>
   );
 }
 
