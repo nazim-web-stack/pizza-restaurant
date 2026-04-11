@@ -29,18 +29,6 @@ const links = [
   { name: "Contact", path: "/contact" },
 ];
 
-const prices = [
-  {img: '/images/pizza-1.jpg', name: 'Italian Pizza', price: '$20', desc: 'A small river named Duden flows by their place and supplies' },
-  {img: '/images/pizza-2.jpg', name: 'Hawaiian Pizza', price: '$29', desc: 'A small river named Duden flows by their place and supplies' },
-  {img: '/images/pizza-3.jpg', name: 'Greek Pizza', price: '$20', desc: 'A small river named Duden flows by their place and supplies' },
-  {img: '/images/pizza-4.jpg', name: 'Bacon Crispy Thins', price: '$20', desc: 'A small river named Duden flows by their place and supplies' },
-  {img: '/images/pizza-5.jpg', name: 'Hawaiian Special', price: '$49', desc: 'A small river named Duden flows by their place and supplies' },
-  {img: '/images/pizza-6.jpg', name: 'Ultimate Overload', price: '$20', desc: 'A small river named Duden flows by their place and supplies' },
-  {img: '/images/pizza-7.jpg', name: 'Bacon Pizza', price: '$20', desc: 'A small river named Duden flows by their place and supplies' },
-  {img: '/images/pizza-8.jpg', name: 'Ham & Pineapple', price: '$20', desc: 'A small river named Duden flows by their place and supplies' },
-];
-
-
 const blogs = [
   {
     id: 1,
@@ -72,11 +60,11 @@ const blogs = [
 ]
 
 const counters = [
-  { target: 5, label: 'Pizza Branches' },
-  { target: 10, label: 'Number of Awards' },
+  { target: 5, label: 'Branches' },
+  { target: 12, label: 'Number of Awards' },
   { target: 2500, label: 'Happy Customers' },
-  { target: 25, label: 'Staff' },
-];
+  { target: 25, label: 'Staff' }
+]
 
 const slides = [
   { label: 'Delicious', title: 'Italian Cuizine', bg: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1600' },

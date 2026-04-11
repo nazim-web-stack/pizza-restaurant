@@ -7,6 +7,11 @@ const authRoutes = require('./routes/auth');
 const menuRoutes = require('./routes/menu');
 const orderRoutes = require('./routes/orders');
 const adminRoutes = require('./routes/admin');
+const customerRoutes = require('./routes/customers');
+const employeeRoutes = require('./routes/employees');
+const inventoryRoutes = require('./routes/inventory');
+const reviewRoutes = require('./routes/reviews');
+const supplierRoutes = require('./routes/suppliers');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -28,6 +33,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/inventory', inventoryRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/suppliers', supplierRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ ok: true, name: 'Pizza Delicious API' });
