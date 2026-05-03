@@ -4,6 +4,44 @@ const Order = require('../models/Order');
 
 const router = express.Router();
 
+// GET /api/orders - get all orders
+router.get('/', async (req, res) => {
+  try {
+    const orders = await Order.find({}).sort({ createdAt: -1 }).lean();
+    res.json(orders);
+  } catch (err) {
+    console.error('Error fetching orders:', err);
+    res.status(500).json({ message: 'Failed to load orders' });
+  }
+});
+
+// PUT /api/orders/:id - update order status
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid order id' });
+    }
+    
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+    
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    
+    res.json({ success: true, order: updatedOrder });
+  } catch (err) {
+    console.error('Error updating order status:', err);
+    res.status(500).json({ message: 'Failed to update order status' });
+  }
+});
+
 router.post('/', async (req, res) => {
   try {
     const { customerId, items, customerName, phone, address, specialNote, totalAmount } = req.body;

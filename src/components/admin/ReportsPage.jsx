@@ -1,24 +1,109 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const monthlyData = [
-  { month: "Oct", revenue: 180000, height: 47 },
-  { month: "Nov", revenue: 210000, height: 55 },
-  { month: "Dec", revenue: 260000, height: 68 },
-  { month: "Jan", revenue: 195000, height: 51 },
-  { month: "Feb", revenue: 280000, height: 73 },
-  { month: "Mar", revenue: 320000, height: 84 },
-];
+const API = 'http://localhost:5000';
 
 export default function ReportsPage() {
+  const [stats, setStats] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [hovered, setHovered] = useState(null);
+
+  // Get JWT token from localStorage
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
+
+  // Fetch stats from API
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch(`${API}/api/admin/stats`, {
+        headers: getAuthHeaders()
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setStats(data || {});
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+      setError('Failed to load stats. Please try again.');
+      setStats({});
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <div style={{
+          width: '40px',
+          height: '40px',
+          border: '4px solid rgba(0,0,0,0.1)',
+          borderTop: '4px solid #e74c3c',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite',
+          margin: '0 auto 20px'
+        }}></div>
+        <div style={{ color: '#666' }}>Loading reports...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <div style={{ color: '#e74c3c', fontSize: '16px', marginBottom: '20px' }}>{error}</div>
+        <button 
+          onClick={fetchStats}
+          style={{
+            padding: '10px 20px',
+            background: '#e74c3c',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            marginRight: '10px'
+          }}
+        >
+          Retry
+        </button>
+        <button 
+          onClick={() => setError(null)}
+          style={{
+            padding: '10px 20px',
+            background: '#666',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer'
+          }}
+        >
+          Dismiss
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "20px" }}>
         {[
-          { label: "Best Day",         value: "Saturday",  color: "#f39c12" },
-          { label: "Best Selling Item",value: "Margherita",color: "#e74c3c" },
-          { label: "Avg Order Value",  value: "Rs 850",    color: "#3498db" },
+          { label: "Total Orders", value: stats.totalOrders || 0, color: "#f39c12" },
+          { label: "Total Menu Items", value: stats.totalMenuItems || 0, color: "#e74c3c" },
+          { label: "Total Revenue", value: `Rs ${((stats.totalRevenue || 0) / 1000).toFixed(1)}K`, color: "#3498db" },
         ].map((s, i) => (
           <div key={i} style={{ background: "#fff", borderRadius: "12px", padding: "14px 16px", border: "1px solid #f0f0f0" }}>
             <div style={{ fontSize: "11px", color: "#888", marginBottom: "6px" }}>{s.label}</div>
@@ -28,47 +113,44 @@ export default function ReportsPage() {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "14px" }}>
-        {/* Bar chart */}
+        {/* Revenue Overview */}
         <div style={{ background: "#fff", borderRadius: "12px", padding: "16px", border: "1px solid #f0f0f0" }}>
           <div style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a2e", marginBottom: "16px" }}>
-            Monthly Revenue (last 6 months)
+            Revenue Overview
           </div>
-          <div style={{ display: "flex", alignItems: "flex-end", gap: "8px", height: "120px" }}>
-            {monthlyData.map((d, i) => (
-              <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}
-                onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}>
-                {hovered === i && (
-                  <div style={{ fontSize: "9px", color: "#e74c3c", fontWeight: 700 }}>
-                    Rs {(d.revenue / 1000).toFixed(0)}K
-                  </div>
-                )}
-                <div style={{ width: "100%", height: `${d.height}px`, borderRadius: "4px 4px 0 0",
-                  background: hovered === i ? "#e74c3c" : "#f5b7b1", transition: "background 0.15s", cursor: "pointer" }} />
-                <span style={{ fontSize: "9px", color: "#aaa" }}>{d.month}</span>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px" }}>
+            <div style={{ padding: "12px", background: "#f8f9fa", borderRadius: "8px" }}>
+              <div style={{ fontSize: "11px", color: "#666", marginBottom: "4px" }}>Total Revenue</div>
+              <div style={{ fontSize: "18px", fontWeight: 700, color: "#27ae60" }}>
+                Rs {((stats.totalRevenue || 0) / 1000).toFixed(1)}K
               </div>
-            ))}
+            </div>
+            <div style={{ padding: "12px", background: "#f8f9fa", borderRadius: "8px" }}>
+              <div style={{ fontSize: "11px", color: "#666", marginBottom: "4px" }}>Avg Order Value</div>
+              <div style={{ fontSize: "18px", fontWeight: 700, color: "#3498db" }}>
+                Rs {stats.totalOrders ? Math.round((stats.totalRevenue || 0) / stats.totalOrders) : 0}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Category breakdown */}
+        {/* Customer Overview */}
         <div style={{ background: "#fff", borderRadius: "12px", padding: "16px", border: "1px solid #f0f0f0" }}>
-          <div style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a2e", marginBottom: "14px" }}>Sales by Category</div>
-          {[
-            { name: "Classic Pizzas",   pct: 42 },
-            { name: "Specialty Pizzas", pct: 28 },
-            { name: "Sides & Extras",   pct: 18 },
-            { name: "Beverages",        pct: 12 },
-          ].map((c, i) => (
-            <div key={i} style={{ marginBottom: "10px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                <span style={{ fontSize: "12px", color: "#555" }}>{c.name}</span>
-                <span style={{ fontSize: "11px", fontWeight: 600, color: "#1a1a2e" }}>{c.pct}%</span>
-              </div>
-              <div style={{ background: "#f5f5f5", borderRadius: "4px", height: "5px" }}>
-                <div style={{ background: "#e74c3c", width: `${c.pct}%`, height: "100%", borderRadius: "4px" }} />
+          <div style={{ fontSize: "13px", fontWeight: 600, color: "#1a1a2e", marginBottom: "14px" }}>Customer Overview</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px" }}>
+            <div style={{ padding: "12px", background: "#f8f9fa", borderRadius: "8px" }}>
+              <div style={{ fontSize: "11px", color: "#666", marginBottom: "4px" }}>Total Customers</div>
+              <div style={{ fontSize: "18px", fontWeight: 700, color: "#e74c3c" }}>
+                {stats.totalCustomers || 0}
               </div>
             </div>
-          ))}
+            <div style={{ padding: "12px", background: "#f8f9fa", borderRadius: "8px" }}>
+              <div style={{ fontSize: "11px", color: "#666", marginBottom: "4px" }}>Orders per Customer</div>
+              <div style={{ fontSize: "18px", fontWeight: 700, color: "#f39c12" }}>
+                {stats.totalCustomers ? Math.round((stats.totalOrders || 0) / stats.totalCustomers) : 0}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

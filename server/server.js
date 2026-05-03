@@ -12,6 +12,8 @@ const employeeRoutes = require('./routes/employees');
 const inventoryRoutes = require('./routes/inventory');
 const reviewRoutes = require('./routes/reviews');
 const supplierRoutes = require('./routes/suppliers');
+const financeRoutes = require('./routes/finance');
+const loyaltyRoutes = require('./routes/loyalty');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -38,6 +40,8 @@ app.use('/api/employees', employeeRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/suppliers', supplierRoutes);
+app.use('/api', financeRoutes);
+app.use('/api', loyaltyRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ ok: true, name: 'Pizza Delicious API' });

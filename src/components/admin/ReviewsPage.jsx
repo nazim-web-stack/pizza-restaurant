@@ -1,53 +1,55 @@
-const reviewsData = [
-  { customer: "Bilal Ahmed", item: "Margherita Pizza",  rating: 5, comment: "Excellent pizza! Absolutely perfect.",               date: "29 Mar", replied: true  },
-  { customer: "Sara Malik",  item: "Pepperoni Pizza",   rating: 4, comment: "Good, but could be more spicy",        date: "28 Mar", replied: false },
-  { customer: "Ali Raza",    item: "Garlic Bread",      rating: 3, comment: "Average, needs improvement",             date: "27 Mar", replied: false },
-  { customer: "Hina Khan",   item: "Veggie Special",    rating: 5, comment: "Very fresh ingredients, loved it!",              date: "26 Mar", replied: true  },
-  { customer: "Usman Tariq", item: "BBQ Chicken Pizza", rating: 4, comment: "Good but delivery was a bit late",                 date: "25 Mar", replied: false },
-];
+import { useState, useEffect } from 'react';
+
+const API = 'http://localhost:5000';
 
 export default function ReviewsPage() {
-  const avg = (reviewsData.reduce((s, r) => s + r.rating, 0) / reviewsData.length).toFixed(1);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API}/api/reviews`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(r => r.json())
+    .then(data => { 
+      console.log('Reviews data:', data);
+      setReviews(Array.isArray(data) ? data : []); 
+      setLoading(false); 
+    })
+    .catch(err => { 
+      console.error(err); 
+      setLoading(false); 
+    });
+  }, []);
+
+  const stars = (rating) => '★'.repeat(rating || 0) + '☆'.repeat(5 - (rating || 0));
+
+  if (loading) return <div style={{padding: '40px', textAlign: 'center'}}>Loading reviews...</div>;
 
   return (
-    <div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", marginBottom: "20px" }}>
-        {[
-          { label: "Average Rating",  value: `${avg} / 5`,                                      color: "#f39c12" },
-          { label: "Total Reviews",   value: 318,                                                color: "#3498db" },
-          { label: "Pending Reply",   value: reviewsData.filter(r => !r.replied).length,         color: "#e74c3c" },
-        ].map((s, i) => (
-          <div key={i} style={{ background: "#fff", borderRadius: "12px", padding: "14px 16px", border: "1px solid #f0f0f0" }}>
-            <div style={{ fontSize: "11px", color: "#888", marginBottom: "6px" }}>{s.label}</div>
-            <div style={{ fontSize: "22px", fontWeight: 700, color: s.color }}>{s.value}</div>
+    <div style={{padding: '24px'}}>
+      <h2>Customer Reviews</h2>
+      <p style={{color: '#666'}}>Total Reviews: {reviews.length}</p>
+      {reviews.map(review => (
+        <div key={review._id} style={{
+          background: '#fff', border: '1px solid #eee', borderRadius: '12px',
+          padding: '16px', marginBottom: '16px', boxShadow: '0 1px 4px rgba(0,0,0,0.05)'
+        }}>
+          <div style={{display: 'flex', justifyContent: 'space-between'}}>
+            <strong>{review.customerName || 'Anonymous'}</strong>
+            <span style={{color: '#888', fontSize: '0.85rem'}}>
+              {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : ''}
+            </span>
           </div>
-        ))}
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        {reviewsData.map((r, i) => (
-          <div key={i} style={{ background: "#fff", borderRadius: "12px", padding: "14px 16px", border: "1px solid #f0f0f0" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
-              <div>
-                <span style={{ fontWeight: 600, fontSize: "13px", color: "#1a1a2e" }}>{r.customer}</span>
-                <span style={{ margin: "0 6px", color: "#ddd" }}>·</span>
-                <span style={{ fontSize: "12px", color: "#888" }}>{r.item}</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ fontSize: "11px", color: "#aaa" }}>{r.date}</span>
-                {r.replied
-                  ? <span style={{ fontSize: "10px", background: "#e8f5e9", color: "#2e7d32", padding: "2px 7px", borderRadius: "10px" }}>Replied</span>
-                  : <span style={{ fontSize: "10px", background: "#fce4ec", color: "#c62828", padding: "2px 7px", borderRadius: "10px" }}>No Reply</span>}
-              </div>
-            </div>
-            <div style={{ marginBottom: "6px", color: "#f39c12" }}>
-              {"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}
-              <span style={{ fontSize: "11px", color: "#aaa", marginLeft: "4px" }}>{r.rating}/5</span>
-            </div>
-            <p style={{ fontSize: "12px", color: "#555", margin: 0 }}>{r.comment}</p>
+          <div style={{color: '#f5a623', fontSize: '1.2rem', margin: '8px 0'}}>
+            {stars(review.rating)} {review.rating}/5
           </div>
-        ))}
-      </div>
+          <p style={{color: '#444', margin: 0}}>{review.comment}</p>
+        </div>
+      ))}
+      {reviews.length === 0 && (
+        <p style={{textAlign: 'center', color: '#888', marginTop: '40px'}}>No reviews found</p>
+      )}
     </div>
   );
 }

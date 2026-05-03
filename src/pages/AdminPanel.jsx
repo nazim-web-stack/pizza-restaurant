@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminDashboard from "../components/admin/AdminDashboard";
 import OrdersManagement from "../components/admin/OrdersManagement";
 import MenuManagement from "../components/admin/MenuManagement";
@@ -16,7 +16,7 @@ const navGroups = [
     label: "Overview",
     items: [
       { key: "dashboard", label: "Dashboard",  icon: "bi-grid-1x2-fill"     },
-      { key: "orders",    label: "Orders",      icon: "bi-bag-check-fill",  badge: "8" },
+      { key: "orders",    label: "Orders",      icon: "bi-bag-check-fill",  badge: null },
       { key: "menu",      label: "Menu",        icon: "bi-journal-richtext"  },
     ],
   },
@@ -358,6 +358,47 @@ const css = `
 export default function AdminPanel({ onLogout }) {
   const [activePage, setActivePage] = useState("dashboard");
   const [collapsed, setCollapsed]   = useState(false);
+  const [ordersCount, setOrdersCount] = useState(0);
+
+  // Get JWT token from localStorage
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+  };
+
+  // Fetch orders count from API
+  useEffect(() => {
+    fetchOrdersCount();
+  }, []);
+
+  const fetchOrdersCount = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/admin/stats', {
+        headers: getAuthHeaders()
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setOrdersCount(data.totalOrders || 0);
+      }
+    } catch (err) {
+      console.error('Error fetching orders count:', err);
+    }
+  };
+
+  // Update navGroups with dynamic orders count
+  const dynamicNavGroups = navGroups.map(group => ({
+    ...group,
+    items: group.items.map(item => {
+      if (item.key === 'orders') {
+        return { ...item, badge: ordersCount > 0 ? ordersCount.toString() : null };
+      }
+      return item;
+    })
+  }));
 
   const { title, component: ActivePage } = pageMap[activePage] || pageMap.dashboard;
 
@@ -382,7 +423,7 @@ export default function AdminPanel({ onLogout }) {
 
           {/* Navigation */}
           <nav className="adm-nav">
-            {navGroups.map((group) => (
+            {dynamicNavGroups.map((group) => (
               <div key={group.label}>
                 <div className="adm-nav-section-label">{group.label}</div>
                 {group.items.map((item) => (
