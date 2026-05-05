@@ -102,13 +102,15 @@ export default function CustomerDashboard() {
 
   // Fetch real orders from API
   useEffect(() => {
-    if (!customerId || customerId === 'admin') return;
+    if (!userName || userName === 'admin') return;
     
     const fetchOrders = async () => {
       try {
         setOrdersLoading(true);
         setOrdersError(null);
-        const response = await fetch(`http://localhost:5000/api/orders/customer/${customerId}`);
+        const response = await fetch(`http://localhost:5000/api/orders/customer/${encodeURIComponent(userName)}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch orders');
         }
@@ -123,7 +125,7 @@ export default function CustomerDashboard() {
     };
 
     fetchOrders();
-  }, [customerId]);
+  }, [userName]);
 
   const tabs = [
     { id: 'overview', label: '📊 Overview' },

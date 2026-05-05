@@ -77,18 +77,22 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/:customerId', async (req, res) => {
+router.get('/customer/:identifier', async (req, res) => {
   try {
-    const { customerId } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(customerId)) {
-      return res.status(400).json({ message: 'Invalid customer id' });
-    }
-
-    const orders = await Order.find({ customerId }).sort({ createdAt: -1 }).lean();
+    const db = mongoose.connection.db;
+    const identifier = decodeURIComponent(req.params.identifier);
+    
+    const orders = await db.collection('orders').find({
+      $or: [
+        { customerName: identifier },
+        { customerId: identifier }
+      ]
+    }).sort({ createdAt: -1 }).toArray();
+    
     res.json(orders);
-  } catch (err) {
+  } catch(err) {
     console.error(err);
-    res.status(500).json({ message: 'Failed to load orders' });
+    res.status(500).json({ message: err.message });
   }
 });
 
