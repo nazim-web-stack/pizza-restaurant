@@ -14,6 +14,12 @@ const reviewRoutes = require('./routes/reviews');
 const supplierRoutes = require('./routes/suppliers');
 const financeRoutes = require('./routes/finance');
 const loyaltyRoutes = require('./routes/loyalty');
+const attendanceRoutes = require('./routes/attendance');
+const salariesRoutes = require('./routes/salaries');
+const invoicesRoutes = require('./routes/invoices');
+const warehouseRoutes = require('./routes/warehouse');
+const deliveryRoutes = require('./routes/delivery');
+const reportsRoutes = require('./routes/reports');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -40,8 +46,14 @@ app.use('/api/employees', employeeRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/suppliers', supplierRoutes);
-app.use('/api', financeRoutes);
-app.use('/api', loyaltyRoutes);
+app.use('/api/finance', financeRoutes);
+app.use('/api/loyalty', loyaltyRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/salaries', salariesRoutes);
+app.use('/api/invoices', invoicesRoutes);
+app.use('/api/warehouse', warehouseRoutes);
+app.use('/api/delivery', deliveryRoutes);
+app.use('/api/reports', reportsRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ ok: true, name: 'Pizza Delicious API' });
